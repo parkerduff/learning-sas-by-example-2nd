@@ -62,44 +62,6 @@ def tabulate_18_9(df):
     return tab
 
 
-def generate_sql_tabulate_18_4():
-    """SQL for Example 18-4: Frequency counts"""
-    sql = """
--- PROC TABULATE 18-4: Gender × BloodType frequency counts
-SELECT 
-    Gender,
-    SUM(CASE WHEN BloodType = 'A' THEN 1 ELSE 0 END) as A,
-    SUM(CASE WHEN BloodType = 'AB' THEN 1 ELSE 0 END) as AB,
-    SUM(CASE WHEN BloodType = 'B' THEN 1 ELSE 0 END) as B,
-    SUM(CASE WHEN BloodType = 'O' THEN 1 ELSE 0 END) as O
-FROM blood
-GROUP BY Gender
-ORDER BY Gender;
-"""
-    return sql
-
-
-def generate_sql_tabulate_18_9():
-    """SQL for Example 18-9: Multi-dimensional with ROLLUP"""
-    sql = """
--- PROC TABULATE 18-9: Mean by Gender × AgeGroup with totals
-SELECT 
-    COALESCE(Gender, 'All') as Gender,
-    COALESCE(AgeGroup, 'All') as AgeGroup,
-    ROUND(AVG(RBC), 2) as Mean_RBC,
-    ROUND(AVG(WBC), 2) as Mean_WBC,
-    ROUND(AVG(Chol), 2) as Mean_Chol
-FROM blood
-GROUP BY ROLLUP(Gender, AgeGroup)
-ORDER BY 
-    CASE WHEN Gender IS NULL THEN 1 ELSE 0 END,
-    Gender,
-    CASE WHEN AgeGroup IS NULL THEN 1 ELSE 0 END,
-    AgeGroup;
-"""
-    return sql
-
-
 if __name__ == '__main__':
     df = load_blood_data()
     
@@ -132,11 +94,5 @@ if __name__ == '__main__':
     print(tab_9)
     
     print("\n" + "=" * 80)
-    print("SQL Equivalent - Example 18-4:")
+    print("SQL Equivalents: See proc_tabulate.sql")
     print("=" * 80)
-    print(generate_sql_tabulate_18_4())
-    
-    print("\n" + "=" * 80)
-    print("SQL Equivalent - Example 18-9:")
-    print("=" * 80)
-    print(generate_sql_tabulate_18_9())

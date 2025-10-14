@@ -53,45 +53,6 @@ def proc_means(df, variables=['RBC', 'WBC'], maxdec=1):
     return stats
 
 
-def generate_sql_proc_means():
-    """
-    Generate SQL equivalent of PROC MEANS
-    
-    Returns:
-    --------
-    str
-        SQL query string
-    """
-    sql = """
--- PROC MEANS equivalent in SQL
--- Statistics for RBC and WBC variables
-
-SELECT 
-    'RBC' as Variable,
-    COUNT(RBC) as N,
-    COUNT(*) - COUNT(RBC) as N_Miss,
-    ROUND(AVG(RBC), 1) as Mean,
-    ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY RBC), 1) as Median,
-    ROUND(MIN(RBC), 1) as Min,
-    ROUND(MAX(RBC), 1) as Max
-FROM blood
-
-UNION ALL
-
-SELECT 
-    'WBC' as Variable,
-    COUNT(WBC) as N,
-    COUNT(*) - COUNT(WBC) as N_Miss,
-    ROUND(AVG(WBC), 1) as Mean,
-    ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY WBC), 1) as Median,
-    ROUND(MIN(WBC), 1) as Min,
-    ROUND(MAX(WBC), 1) as Max
-FROM blood
-ORDER BY Variable;
-"""
-    return sql
-
-
 if __name__ == '__main__':
     df = load_blood_data()
     
@@ -104,6 +65,5 @@ if __name__ == '__main__':
     print(stats.to_string(index=False))
     
     print("\n" + "=" * 60)
-    print("SQL Equivalent Query:")
+    print("SQL Equivalent: See proc_means.sql")
     print("=" * 60)
-    print(generate_sql_proc_means())

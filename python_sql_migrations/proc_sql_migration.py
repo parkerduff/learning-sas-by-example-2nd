@@ -44,43 +44,6 @@ def proc_sql_percentages(df, n_obs=10):
     return percentages
 
 
-def generate_sql_proc_sql():
-    """
-    Generate SQL equivalent of PROC SQL percentages calculation
-    
-    Returns:
-    --------
-    str
-        SQL query string
-    """
-    sql = """
--- PROC SQL equivalent: Calculate percentages relative to mean
--- Using first 10 observations (LIMIT 10)
-
-WITH first_10 AS (
-    SELECT * FROM blood LIMIT 10
-),
-means AS (
-    SELECT 
-        AVG(RBC) as MeanRBC,
-        AVG(WBC) as MeanWBC
-    FROM first_10
-)
-SELECT 
-    f.Subject,
-    f.RBC,
-    f.WBC,
-    m.MeanRBC,
-    m.MeanWBC,
-    100 * f.RBC / m.MeanRBC as Percent_RBC,
-    100 * f.WBC / m.MeanWBC as Percent_WBC
-FROM first_10 f
-CROSS JOIN means m
-ORDER BY f.Subject;
-"""
-    return sql
-
-
 if __name__ == '__main__':
     df = load_blood_data()
     
@@ -93,6 +56,5 @@ if __name__ == '__main__':
     print(percentages.to_string(index=False))
     
     print("\n" + "=" * 80)
-    print("SQL Equivalent Query:")
+    print("SQL Equivalent: See proc_sql.sql")
     print("=" * 80)
-    print(generate_sql_proc_sql())

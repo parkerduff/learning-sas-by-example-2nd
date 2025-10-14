@@ -11,30 +11,34 @@ The migration follows the test-driven approach outlined in the migration plan do
 ### Data Loading
 - **`load_blood_data.py`** - Loads `blood.txt` into pandas DataFrame
   - Equivalent to SAS DATA step from `Create_Datasets.sas` lines 802-817
-  - Handles fixed-width format and missing value conversion
+  - Handles whitespace-delimited format and missing value conversion
 
-### Procedure Migrations
+### Python Procedure Migrations
 
-- **`proc_means_migration.py`** - Statistical summary
-  - Python: Uses `df.agg()` with statistics (N, NMISS, Mean, Median, Min, Max)
-  - SQL: Uses aggregate functions with UNION ALL
+- **`proc_means_migration.py`** - Statistical summary using pandas
+  - Uses `df.agg()` with statistics (N, NMISS, Mean, Median, Min, Max)
   - Equivalent to `Programs Used in the Second Edition.sas` lines 2176-2185
 
-- **`proc_report_migration.py`** - Cross-tabulation report
-  - Python: Uses `pivot_table()` for multi-dimensional analysis
-  - SQL: Uses CASE statements with GROUP BY
+- **`proc_report_migration.py`** - Cross-tabulation report using pandas
+  - Uses `pivot_table()` for multi-dimensional analysis
   - Equivalent to `Programs Used in the Second Edition.sas` lines 2163-2171
 
-- **`proc_tabulate_migration.py`** - Table layouts (multiple examples)
-  - Python: Uses `crosstab()` and `pivot_table()` with margins
-  - SQL: Uses CASE statements and ROLLUP for totals
+- **`proc_tabulate_migration.py`** - Table layouts using pandas (multiple examples)
+  - Uses `crosstab()` and `pivot_table()` with margins
   - Equivalent to `Programs Used in the Second Edition.sas` lines 2492-2534
   - Includes examples 18-4, 18-5, 18-8, and 18-9
 
-- **`proc_sql_migration.py`** - Calculated percentages
-  - Python: Calculates mean and percentages on first 10 observations
-  - SQL: Uses CTE (Common Table Expression) for calculated fields
+- **`proc_sql_migration.py`** - Calculated percentages using pandas
+  - Calculates mean and percentages on first 10 observations
   - Equivalent to `Solutions_to_Odd_Numbered_problems.sas` lines 1901-1915
+
+### SQL Queries (Standalone Files)
+
+- **`create_table.sql`** - Table schema and data loading examples
+- **`proc_means.sql`** - Statistical summary using SQL aggregates
+- **`proc_report.sql`** - Cross-tabulation using CASE statements and GROUP BY
+- **`proc_tabulate.sql`** - Multiple table layouts using CASE statements and ROLLUP
+- **`proc_sql.sql`** - Calculated percentages using CTEs (Common Table Expressions)
 
 ## Prerequisites
 
@@ -85,26 +89,37 @@ print(stats)
 
 ### SQL Execution
 
-The SQL queries can be executed in any SQL database after loading the blood dataset. Each migration file includes a `generate_sql_*()` function that returns the SQL query string.
+The SQL queries are provided as standalone `.sql` files that can be executed in any SQL database after loading the blood dataset.
+
+**Setup Steps:**
+
+1. **Create the table and load data** using `create_table.sql`
+2. **Run any of the procedure SQL files:**
+   - `proc_means.sql` - Statistical summaries
+   - `proc_report.sql` - Cross-tabulation reports
+   - `proc_tabulate.sql` - Various table layouts
+   - `proc_sql.sql` - Percentage calculations
 
 **PostgreSQL Example:**
-```sql
--- First, load the data (adjust path as needed)
-CREATE TABLE blood (
-    Subject INT,
-    Gender VARCHAR(6),
-    BloodType VARCHAR(2),
-    AgeGroup VARCHAR(5),
-    WBC DECIMAL(10,2),
-    RBC DECIMAL(10,2),
-    Chol DECIMAL(10,2)
-);
+```bash
+# Create table and load data
+psql -d your_database -f create_table.sql
 
--- Load data from file (PostgreSQL)
-COPY blood FROM '/path/to/Data/blood.txt' 
-WITH (FORMAT text, DELIMITER E'\t', NULL '.');
+# Then manually load the data or use COPY command
+psql -d your_database -c "COPY blood FROM '/path/to/Data/blood.txt' WITH (FORMAT text, DELIMITER E'\t', NULL '.');"
 
--- Then run any of the SQL queries from the migration files
+# Run any procedure query
+psql -d your_database -f proc_means.sql
+psql -d your_database -f proc_report.sql
+```
+
+**MySQL Example:**
+```bash
+# Create table
+mysql -u username -p database_name < create_table.sql
+
+# Run procedure queries
+mysql -u username -p database_name < proc_means.sql
 ```
 
 ## Output Examples

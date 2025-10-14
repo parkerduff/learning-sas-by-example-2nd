@@ -45,33 +45,6 @@ def proc_report(df):
     return report
 
 
-def generate_sql_proc_report():
-    """
-    Generate SQL equivalent of PROC REPORT
-    
-    Returns:
-    --------
-    str
-        SQL query string
-    """
-    sql = """
--- PROC REPORT equivalent in SQL
--- Average Blood Counts by Gender, BloodType, and AgeGroup
-
-SELECT 
-    Gender,
-    BloodType,
-    ROUND(AVG(CASE WHEN AgeGroup = 'Old' THEN WBC END), 0) as Old_WBC,
-    ROUND(AVG(CASE WHEN AgeGroup = 'Young' THEN WBC END), 0) as Young_WBC,
-    ROUND(AVG(CASE WHEN AgeGroup = 'Old' THEN RBC END), 2) as Old_RBC,
-    ROUND(AVG(CASE WHEN AgeGroup = 'Young' THEN RBC END), 2) as Young_RBC
-FROM blood
-GROUP BY Gender, BloodType
-ORDER BY Gender, BloodType;
-"""
-    return sql
-
-
 if __name__ == '__main__':
     df = load_blood_data()
     
@@ -84,6 +57,5 @@ if __name__ == '__main__':
     print(report.to_string(index=False))
     
     print("\n" + "=" * 80)
-    print("SQL Equivalent Query:")
+    print("SQL Equivalent: See proc_report.sql")
     print("=" * 80)
-    print(generate_sql_proc_report())
